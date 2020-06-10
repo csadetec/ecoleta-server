@@ -12,11 +12,11 @@ const connection = knex({
 **/
 
 //dont'wokdk
-/*
+
 const connection = knex({
   client: 'mysql',
   connection: {
-    host: '127.0.0.1',
+      host: '127.0.0.1',
     user: 'server',
     password: 'server_user',
     database: 'ecoleta'

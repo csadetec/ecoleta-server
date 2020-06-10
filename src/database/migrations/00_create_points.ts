@@ -8,10 +8,10 @@ export async function up(kenx: knex){
     table.string('whatsapp').notNullable()
     table.decimal('latitude').notNullable()
     table.decimal('longitude').notNullable()
-    table.string('cyte').notNullable()
+    table.string('city').notNullable()
     table.string('uf', 2).notNullable()
     table.integer('number')
-    table.timestamps()
+    table.timestamps(true, true)
     
   })
 
