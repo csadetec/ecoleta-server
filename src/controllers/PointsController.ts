@@ -6,31 +6,33 @@ class PointsController {
   async index(request: Request, response: Response){
     const {city, uf, items } = request.query
 
-
-
     const parsedItems = String(items)
       .split(',')
       .map(item => Number(item.trim()))
 
       
-    const points = await knex('points')
-      .join('point_items', 'points.id', '=','point_items.point_id')
-      .whereIn('point_items.item_id', parsedItems)
-      .where({city})
-      .where({uf})
-      .distinct('points.*')
-      //.select('points.id', 'points.name')
-    /** */
-    //return response.json(parsedItems)
+    let points = await knex('points')
+    .join('point_items', 'points.id', '=','point_items.point_id')
+    .whereIn('point_items.item_id', parsedItems)
+    .where({city})
+    .where({uf})
+    .distinct('points.*')
+
+    for(let r in points){
+      points[r].items = await knex('items')
+      .join('point_items', 'items.id', '=', 'point_items.item_id')
+      .where('point_items.point_id', points[r].id)
+    }
+
     return response.json(points)
 
-    //return response.json({city, uf, items})
   }
 
   async show(request: Request, response: Response){
     const {id} = request.params
 
     const point = await knex('points').where('id', id).first()
+    console.log(point)
 
     if(!point)
       return response.status(400).json({message: 'Point not found'})
@@ -42,7 +44,7 @@ class PointsController {
     point.items = items
     return response.json(point)
 
-    return response.json({point, items})
+    //return response.json({point, items})
     
 
   }
@@ -54,7 +56,7 @@ class PointsController {
     const trx = await knex.transaction()
 
     const point = {
-      image: 'image-fake', name, email, whatsapp, latitude, longitude, city, uf
+      image: 'https://images.unsplash.com/photo-1578240597669-05ffd2cf91be?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=347&q=80-fake', name, email, whatsapp, latitude, longitude, city, uf
     }
 
     const insertedIds = await trx('points').insert(point)
